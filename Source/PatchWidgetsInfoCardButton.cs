@@ -13,13 +13,15 @@ namespace RecipeIcons
     [HarmonyPatch(typeof(Widgets), "InfoCardButton", new Type[] { typeof(float), typeof(float), typeof(Def) })]
     class PatchWidgetsInfoCardButton
     {
-        class Icon {
-            public Texture2D icon = null;
-            public Color color = Color.black;
-            
-            public Icon(ThingDef thing) {
-                icon = thing.uiIcon;
-                color = thing.uiIconColor;
+        class Icon
+        {
+            public ThingDef thingDef = null;
+            public Graphic graphic = null;
+
+            public Icon(ThingDef thing)
+            {
+                thingDef = thing;
+                graphic = thing.graphic;
             }
         }
 
@@ -37,7 +39,8 @@ namespace RecipeIcons
             return res;
         }
 
-        static Icon getIconWithoutCache(Def def) {
+        static Icon getIconWithoutCache(Def def)
+        {
             RecipeDef recipe = def as RecipeDef;
             if (recipe != null)
             {
@@ -48,7 +51,8 @@ namespace RecipeIcons
                     return new Icon(recipe.products[0].thingDef);
                 }
 
-                foreach(IngredientCount ing in recipe.ingredients) {
+                foreach (IngredientCount ing in recipe.ingredients)
+                {
                     if (ing == null) continue;
                     if (!ing.IsFixedIngredient) continue;
                     return new Icon(ing.FixedIngredient);
@@ -63,14 +67,15 @@ namespace RecipeIcons
 
             return null;
         }
-
+        
         static bool Prefix(float x, float y, Def def)
         {
             Icon icon = getIcon(def);
             if (icon == null) return true;
 
             Rect rect = new Rect(x, y, 24f, 24f);
-            if (Widgets.ButtonImage(rect, icon.icon, icon.color))
+            Graphics.DrawTexture(rect, icon.graphic.MatSingle.mainTexture, icon.graphic.MatSingle);
+            if (Widgets.ButtonInvisible(rect))
             {
                 Find.WindowStack.Add(new Dialog_InfoCard(def));
                 return true;
@@ -80,7 +85,9 @@ namespace RecipeIcons
             UIHighlighter.HighlightOpportunity(rect, "InfoCard");
             return false;
         }
-    }
 
-    
+
+
+        
+    }
 }
