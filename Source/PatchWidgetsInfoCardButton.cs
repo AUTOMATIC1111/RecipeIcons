@@ -15,13 +15,11 @@ namespace RecipeIcons
     {
         class Icon
         {
-            public ThingDef thingDef = null;
-            public Graphic graphic = null;
+            public Material material = null;
 
             public Icon(ThingDef thing)
             {
-                thingDef = thing;
-                graphic = thing.graphic;
+                material = thing.graphic.MatSingle;
             }
         }
 
@@ -74,7 +72,7 @@ namespace RecipeIcons
             if (icon == null) return true;
 
             Rect rect = new Rect(x-2, y-2, 28f, 28f);
-            Graphics.DrawTexture(rect, icon.graphic.MatSingle.mainTexture, icon.graphic.MatSingle);
+            Graphics.DrawTexture(rect, icon.material.mainTexture, icon.material);
             if (Widgets.ButtonInvisible(rect))
             {
                 Find.WindowStack.Add(new Dialog_InfoCard(def));
