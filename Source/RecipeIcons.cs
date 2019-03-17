@@ -13,4 +13,18 @@ namespace RecipeIcons
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }
+
+    [StaticConstructorOnStartup]
+    public class Testing
+    {
+        static Testing()
+        {
+            Verse.Log.Message("Testing");
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\test.txt"))
+            {
+                file.WriteLine("Testing");
+            }
+        }
+    }
+
 }

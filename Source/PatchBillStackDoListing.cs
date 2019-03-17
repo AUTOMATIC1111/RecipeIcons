@@ -10,7 +10,7 @@ using Verse;
 namespace RecipeIcons
 {
 
-    [HarmonyPatch(typeof(BillStack), "DoListing"), StaticConstructorOnStartup]
+    [HarmonyPatch(typeof(BillStack), "DoListing")]
     class PatchBillStackDoListing
     {
         static bool Prefix(BillStack __instance, Rect rect, ref Func<List<FloatMenuOption>> recipeOptionsMaker, ref Vector2 scrollPosition, ref float viewHeight)

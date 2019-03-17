@@ -10,7 +10,7 @@ using Verse;
 
 namespace RecipeIcons
 {
-    [HarmonyPatch(typeof(Widgets), "InfoCardButton", new Type[] { typeof(float), typeof(float), typeof(Def) }), StaticConstructorOnStartup]
+    [HarmonyPatch(typeof(Widgets), "InfoCardButton", new Type[] { typeof(float), typeof(float), typeof(Def) })]
     class PatchWidgetsInfoCardButton
     {
         class Icon {

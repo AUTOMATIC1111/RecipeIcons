@@ -9,7 +9,6 @@ namespace RecipeIcons
 {
     [HarmonyPatch(typeof(FloatMenu), MethodType.Constructor)]
     [HarmonyPatch(new Type[] { typeof(List<FloatMenuOption>) })]
-    [StaticConstructorOnStartup]
     class PatchFloatMenu
     {
         public static bool drawIconsOnLeft = false;
