@@ -73,7 +73,7 @@ namespace RecipeIcons
             Icon icon = getIcon(def);
             if (icon == null) return true;
 
-            Rect rect = new Rect(x, y, 24f, 24f);
+            Rect rect = new Rect(x-2, y-2, 28f, 28f);
             Graphics.DrawTexture(rect, icon.graphic.MatSingle.mainTexture, icon.graphic.MatSingle);
             if (Widgets.ButtonInvisible(rect))
             {
