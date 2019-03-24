@@ -27,9 +27,11 @@ namespace RecipeIcons
                     material = thing.graphic.MatSingle;
                     texture = material.mainTexture;
                     thingDef = thing;
-
-                    // workaround for buggy plant display; I can't figure out the underlying cause
-                    if (thing.plant != null) material = null;
+                    
+                    if(thing.graphicData.shaderType != ShaderTypeDefOf.CutoutComplex)
+                    {
+                        material = null;
+                    }
                 }
                 else
                 {
