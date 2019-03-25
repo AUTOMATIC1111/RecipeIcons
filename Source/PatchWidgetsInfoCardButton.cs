@@ -17,25 +17,28 @@ namespace RecipeIcons
         {
             public Material material = null;
             public Texture texture = null;
-            public ThingDef thingDef = null;
+            public Texture2D texture2D = null;
+            public ThingDef thingDef;
+            public Color textureColor;
             public string tooltip;
 
             public Icon(ThingDef thing, string tooltip)
             {
-                if(thing!=null)
+                thingDef = thing;
+
+                material = thing != null && thing.graphic != null && thing.graphicData != null ? thing.graphic.MatSingle : null;
+                if (material != null)
                 {
-                    material = thing.graphic.MatSingle;
-                    texture = material.mainTexture;
-                    thingDef = thing;
-                    
-                    if(thing.graphicData.shaderType != ShaderTypeDefOf.CutoutComplex)
+                    if (thing.graphicData.shaderType == ShaderTypeDefOf.CutoutComplex)
                     {
+                        texture = material.mainTexture;
+                    }
+                    else
+                    {
+                        texture2D = thing.uiIcon;
+                        textureColor = thing.uiIconColor;
                         material = null;
                     }
-                }
-                else
-                {
-                    texture = TextureInfo;
                 }
 
                 this.tooltip = tooltip == null ? "DefInfoTip".Translate() : tooltip;
@@ -55,57 +58,6 @@ namespace RecipeIcons
 
             map.Add(def, res);
             return res;
-        }
-
-        static string getRecipeIngridients(RecipeDef recipe)
-        {
-            StringBuilder sb = new StringBuilder();
-            int total = 0;
-
-            sb.AppendLine("Ingridients:");
-
-            foreach (IngredientCount ing in recipe.ingredients)
-            {
-                if (ing == null) continue;
-                float count = ing.GetBaseCount();
-
-                sb.Append(" - ");
-                if (ing.IsFixedIngredient)
-                {
-                    sb.Append(ing.FixedIngredient.LabelCap);
-                }
-                else
-                {
-                    List<string> cats = Traverse.Create(ing.filter).Field<List<string>>("categories").Value;
-                    if (cats != null && cats.Count > 0) {
-                        int index = 0;
-                        foreach (string catName in cats)
-                        {
-                            ThingCategoryDef cat = DefDatabase<ThingCategoryDef>.GetNamed(catName, false);
-                            if (cat == null) continue;
-
-                            if (index != 0) sb.Append(", ");
-                            sb.Append(cat.LabelCap);
-                            index++;
-                        }
-                    }
-                }
-
-                if (count != 1)
-                {
-                    sb.Append(" (");
-                    sb.Append(count.ToString());
-                    sb.Append(")");
-                }
-                sb.AppendLine("");
-                total++;
-            }
-
-            if (total == 0) {
-                sb.AppendLine(" - ?");
-            }
-
-            return sb.ToString();
         }
 
         static bool ShiftIsHeld
@@ -143,7 +95,7 @@ namespace RecipeIcons
                 {
                     if (ing == null) continue;
                     if (!ing.IsFixedIngredient) continue;
-                    return new Icon(ing.FixedIngredient, getRecipeIngridients(recipe));
+                    return new Icon(ing.FixedIngredient, null);
                 }
             }
 
@@ -161,10 +113,24 @@ namespace RecipeIcons
             Icon icon = getIcon(def);
             if (icon == null) return true;
 
-            Rect rect = icon.texture==TextureInfo ? new Rect(x, y, 24f, 24f) : new Rect(x-2, y-2, 28f, 28f);
-            GenUI.DrawTextureWithMaterial(rect, icon.texture, icon.material);
+            Rect rect = new Rect(x-2, y-2, 28f, 28f);
 
-            if (Widgets.ButtonInvisible(rect))
+            bool clicked;
+            if (icon.texture2D != null)
+            {
+                clicked = Widgets.ButtonImage(rect, icon.texture2D, icon.textureColor);
+            }
+            else if (icon.material != null)
+            {
+                GenUI.DrawTextureWithMaterial(rect, icon.texture, icon.material);
+                clicked = Widgets.ButtonInvisible(rect);
+            }
+            else
+            {
+                return true;
+            }
+
+            if (clicked)
             {
                 Find.WindowStack.Add(new Dialog_InfoCard((ShiftIsHeld && icon.thingDef!=null) ? icon.thingDef : def));
                 return true;
