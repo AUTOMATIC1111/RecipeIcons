@@ -20,29 +20,24 @@ namespace RecipeIcons
             public Texture2D texture2D = null;
             public ThingDef thingDef;
             public Color textureColor;
-            public string tooltip;
 
-            public Icon(ThingDef thing, string tooltip)
+            public Icon(ThingDef thing)
             {
                 thingDef = thing;
-
-                material = thing != null && thing.graphic != null && thing.graphicData != null ? thing.graphic.MatSingle : null;
-                if (material != null)
+                
+                if (thing != null)
                 {
-                    if (thing.graphicData.shaderType == ShaderTypeDefOf.CutoutComplex)
+                    if (thing.graphic != null && thing.graphicData != null && thing.graphicData.shaderType == ShaderTypeDefOf.CutoutComplex && thing.graphic.MatSingle != null)
                     {
+                        material = thing.graphic.MatSingle;
                         texture = material.mainTexture;
                     }
                     else
                     {
                         texture2D = thing.uiIcon;
                         textureColor = thing.uiIconColor;
-                        material = null;
                     }
                 }
-
-                this.tooltip = tooltip == null ? "DefInfoTip".Translate() : tooltip;
-
             }
         }
 
@@ -79,30 +74,22 @@ namespace RecipeIcons
                     {
                         if (item.thingDef == null) continue;
 
-                        return new Icon(item.thingDef, null);
+                        return new Icon(item.thingDef);
                     }
                 }
-
-                if (recipe.specialProducts != null)
-                {
-                    foreach (SpecialProductType type in recipe.specialProducts)
-                    {
-                        return new Icon(null, null);
-                    }
-                }
-
+                
                 foreach (IngredientCount ing in recipe.ingredients)
                 {
                     if (ing == null) continue;
                     if (!ing.IsFixedIngredient) continue;
-                    return new Icon(ing.FixedIngredient, null);
+                    return new Icon(ing.FixedIngredient);
                 }
             }
 
             ThingDef thing = def as ThingDef;
             if (thing != null)
             {
-                return new Icon(thing, null);
+                return new Icon(thing);
             }
 
             return null;
@@ -118,7 +105,7 @@ namespace RecipeIcons
             bool clicked;
             if (icon.texture2D != null)
             {
-                clicked = Widgets.ButtonImage(rect, icon.texture2D, icon.textureColor);
+                clicked = Widgets.ButtonImage(rect, icon.texture2D, new Color(icon.textureColor.r, icon.textureColor.g, icon.textureColor.b, GUI.color.a));
             }
             else if (icon.material != null)
             {
@@ -136,7 +123,7 @@ namespace RecipeIcons
                 return true;
             }
 
-            TooltipHandler.TipRegion(rect, icon.tooltip);
+            TooltipHandler.TipRegion(rect, "DefInfoTip".Translate());
             UIHighlighter.HighlightOpportunity(rect, "InfoCard");
             return false;
         }
