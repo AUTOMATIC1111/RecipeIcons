@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using System.Reflection;
 using Verse;
 
@@ -9,7 +9,7 @@ namespace RecipeIcons
     {
         static RecipeIcons()
         {
-            var harmony = HarmonyInstance.Create("com.github.automatic1111.recipeicons");
+            var harmony = new Harmony("com.github.automatic1111.recipeicons");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }
