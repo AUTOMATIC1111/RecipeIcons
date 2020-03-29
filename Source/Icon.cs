@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -9,31 +10,75 @@ using Verse;
 
 namespace RecipeIcons
 {
-    class Icon
+    [StaticConstructorOnStartup]
+    public class Icon
     {
-        public static Icon missing = new Icon(null);
+        public static Icon missing = new Icon("RecipeIcons/Missing", true);
+        public static Icon A = new Icon("RecipeIcons/A", true);
+        public static Icon B = new Icon("RecipeIcons/B", true);
+        public static Icon C = new Icon("RecipeIcons/C", true);
+        public static Icon X = new Icon("RecipeIcons/X", true);
+        public static Icon More = new Icon("RecipeIcons/More");
+        static Texture2D human = ContentFinder<Texture2D>.Get("RecipeIcons/Human");
 
         public Material material = null;
         public Texture2D texture2D = null;
         public Texture texture = null;
-        public ThingDef thingDef;
+        public ThingDef thingDef = null;
         public Color textureColor;
+        public bool isMissing = false;
+
+        static Dictionary<string, Icon> mapStuffCategoryIcons = new Dictionary<string, Icon>();
+        public static Dictionary<ThingDef, ThingDef> corpseMap = new Dictionary<ThingDef, ThingDef>();
+        static Icon()
+        {
+            mapStuffCategoryIcons[StuffCategoryDefOf.Metallic.defName] = new Icon(ContentFinder<Texture2D>.Get("RecipeIcons/Categories/Metallic"), true);
+            mapStuffCategoryIcons[StuffCategoryDefOf.Woody.defName] = new Icon(ContentFinder<Texture2D>.Get("RecipeIcons/Categories/Woody"), true);
+            mapStuffCategoryIcons[StuffCategoryDefOf.Stony.defName] = new Icon(ContentFinder<Texture2D>.Get("UI/Icons/ThingCategories/StoneBlocks"), true);
+            mapStuffCategoryIcons[StuffCategoryDefOf.Fabric.defName] = new Icon(ContentFinder<Texture2D>.Get("UI/Icons/ThingCategories/Textiles"), true);
+            mapStuffCategoryIcons[StuffCategoryDefOf.Leathery.defName] = new Icon(ContentFinder<Texture2D>.Get("UI/Icons/ThingCategories/Leathers"), true);
+            mapStuffCategoryIcons["Gemstones"] = new Icon(ContentFinder<Texture2D>.Get("RecipeIcons/Categories/Gemstone"), true);
+
+            foreach (ThingDef thing in DefDatabase<ThingDef>.AllDefs.Where(x => x.race?.corpseDef != null))
+            {
+                corpseMap[thing.race.corpseDef] = thing;
+            }
+        }
 
         public Icon(ThingDef thing)
         {
             thingDef = thing;
+            if (thing == null) return;
 
-            if (thing != null)
+            texture2D = thing.uiIcon == BaseContent.BadTex ? null : thing.uiIcon;
+            textureColor = thing.uiIconColor;
+
+            if (texture2D == null && corpseMap.ContainsKey(thing))
             {
+                thingDef = thing = corpseMap[thing];
                 texture2D = thing.uiIcon == BaseContent.BadTex ? null : thing.uiIcon;
-                textureColor = thing.uiIconColor;
-
-                if (thing.graphic != null && thing.graphicData != null && thing.graphicData.shaderType == ShaderTypeDefOf.CutoutComplex && ! thing.graphic.MatSingle.NullOrBad())
-                {
-                    material = thing.graphic.MatSingle;
-                    texture = material.mainTexture;
-                }
             }
+
+            if (thing == ThingDefOf.Human)
+            {
+                texture2D = human;
+            }
+
+            if (thing.graphic != null && thing.graphicData != null && thing.graphicData.shaderType == ShaderTypeDefOf.CutoutComplex && !thing.graphic.MatSingle.NullOrBad())
+            {
+                material = thing.graphic.MatSingle;
+                texture = material.mainTexture;
+            }
+        }
+
+        public Icon(Texture2D tex, bool isMissing = false)
+        {
+            texture2D = tex;
+            textureColor = Color.white;
+            this.isMissing = isMissing;
+        }
+        public Icon(string texPath, bool isMissing = false) : this(ContentFinder<Texture2D>.Get(texPath), isMissing)
+        {
 
         }
 
@@ -120,5 +165,52 @@ namespace RecipeIcons
             return missing;
         }
 
+        static Dictionary<string, Icon> mapCats = new Dictionary<string, Icon>();
+        static FieldInfo fieldCategories = typeof(ThingFilter).GetField("categories", BindingFlags.NonPublic | BindingFlags.Instance);
+        static FieldInfo fieldStuffCategoriesToAllow = typeof(ThingFilter).GetField("stuffCategoriesToAllow", BindingFlags.NonPublic | BindingFlags.Instance);
+        public static Icon getIcon(RecipeDef recipe, IngredientCount ing)
+        {
+            Icon res = missing;
+
+            if (ing == null) return missing;
+            if (ing.IsFixedIngredient) return getIcon(ing.FixedIngredient);
+
+            if (ing.filter == null) return missing;
+
+            string name = fieldCategories.GetValue(ing.filter) as string;
+            if (name != null)
+            {
+                if (mapCats.TryGetValue(name, out res)) return res;
+
+                ThingCategoryDef cat = DefDatabase<ThingCategoryDef>.GetNamed(name, false);
+                res = cat == null ? missing : new Icon(cat.icon);
+
+                mapCats.Add(name, res);
+                return res;
+            }
+
+            ThingDef def = recipe.ProducedThingDef;
+            if (def?.stuffCategories != null)
+            {
+                foreach (StuffCategoryDef cat in def.stuffCategories)
+                {
+                    res = mapStuffCategoryIcons.TryGetValue(cat.defName);
+                    if (res != missing) return res;
+                }
+            }
+
+            return missing;
+        }
+
+        public static Icon getVariableIcon(int num)
+        {
+            switch (num)
+            {
+                case 0: return A;
+                case 1: return B;
+                case 2: return C;
+                default: return X;
+            }
+        }
     }
 }

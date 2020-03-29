@@ -329,10 +329,15 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Icon.cs" />
-    <Compile Include="PatchHealthCardUtility.cs" />
-    <Compile Include="PatchListing_TreeThingFilter.cs" />
-    <Compile Include="PatchWidgets.cs" />
+    <Compile Include="Patch\PatchFloatMenu.cs" />
+    <Compile Include="Patch\PatchFloatMenuOption.cs" />
+    <Compile Include="Patch\PatchHealthCardUtility.cs" />
+    <Compile Include="Patch\PatchListing_TreeThingFilter.cs" />
+    <Compile Include="Patch\PatchWidgets.cs" />
     <Compile Include="RecipeIcons.cs" />
+    <Compile Include="RecipeTooltip.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="TextLayout.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

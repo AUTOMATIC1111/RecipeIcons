@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 
-namespace RecipeIcons
+namespace RecipeIcons.Patch
 {
     [HarmonyPatch(typeof(Widgets), "DefIcon", new Type[] { typeof(Rect), typeof(Def), typeof(ThingDef), typeof(float), typeof(bool) })]
     class PatchWidgetsDefIcon
@@ -32,7 +32,6 @@ namespace RecipeIcons
 
             float widthDiff = targetWidth - rect.width;
             rect = new Rect(rect.x - widthDiff / 2, rect.y - widthDiff / 2, targetWidth, targetWidth);
-
 
             if (!icon.Draw(rect)) return true;
 

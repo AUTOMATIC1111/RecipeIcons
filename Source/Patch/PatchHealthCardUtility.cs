@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 
-namespace RecipeIcons
+namespace RecipeIcons.Patch
 {
     [HarmonyPatch(typeof(HealthCardUtility), "GenerateSurgeryOption")]
     class PatchHealthCardUtility
@@ -28,10 +28,9 @@ namespace RecipeIcons
             Icon icon = Icon.getIcon(recipe);
             if (icon == Icon.missing) return option;
 
-            fieldShownItem.SetValue(option, icon.thingDef);
+            if(icon.thingDef != null) fieldShownItem.SetValue(option, icon.thingDef);
 
             return option;
         }
-
     }
 }

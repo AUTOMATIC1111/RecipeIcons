@@ -8,13 +8,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 
-namespace RecipeIcons
+namespace RecipeIcons.Patch
 {
     [HarmonyPatch(typeof(Listing_TreeThingFilter), "DoThingDef")]
     class PatchListing_TreeThingFilter
     {
-        static FieldInfo fieldViewHeight = typeof(ThingFilterUI).GetField("viewHeight", BindingFlags.NonPublic | BindingFlags.Static);
-
         static void Prefix(Listing_TreeThingFilter __instance, float ___curY, ThingDef tDef, ref int nestLevel)
         {
             nestLevel++;
