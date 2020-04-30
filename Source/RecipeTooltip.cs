@@ -14,11 +14,11 @@ namespace RecipeIcons
 
         static FieldInfo fieldShownItem = typeof(FloatMenuOption).GetField("shownItem", BindingFlags.NonPublic | BindingFlags.Instance);
         static Dictionary<string, RecipeDef> recipeDatabase = new Dictionary<string, RecipeDef>();
-        static string RecipeKey(RecipeDef def) { return def.LabelCap + "|" + def.ProducedThingDef?.defName; }
-        static string RecipeKey(FloatMenuOption option) { return option.Label + "|" + (fieldShownItem.GetValue(option) as ThingDef)?.defName; }
+        static string RecipeKey(RecipeDef def) { return (def.LabelCap + "|" + def.ProducedThingDef?.defName).Trim(); }
+        static string RecipeKey(FloatMenuOption option) { return (option.Label + "|" + (fieldShownItem.GetValue(option) as ThingDef)?.defName).Trim(); }
 
         private static readonly Color ColorBGActive = new ColorInt(21, 25, 29).ToColor;
-        private static readonly Color ColorBorder = new ColorInt(255, 255, 0).ToColor;
+        private static readonly Color ColorBorder = Color.white;
         private static readonly Color ColorTextActive = Color.white;
         private static readonly Color ColorTextIngCount = new Color(0.5f, 0.5f, 0.5f);
         private static readonly int iconSize = 28;

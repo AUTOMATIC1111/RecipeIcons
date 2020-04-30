@@ -33,9 +33,11 @@ namespace RecipeIcons.Patch
             float widthDiff = targetWidth - rect.width;
             rect = new Rect(rect.x - widthDiff / 2, rect.y - widthDiff / 2, targetWidth, targetWidth);
 
-            if (!icon.Draw(rect)) return true;
+            Color color = GUI.color;
+            bool shouldRunOriginalFunc = !icon.Draw(rect);
+            GUI.color = color;
 
-            return false;
+            return shouldRunOriginalFunc;
         }
     }
 }
