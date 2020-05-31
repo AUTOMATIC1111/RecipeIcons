@@ -74,7 +74,7 @@ namespace RecipeIcons
             Text.Anchor = TextAnchor.MiddleLeft;
             Text.Font = GameFont.Small;
 
-            layout.Text("Consumes: ");
+            layout.Text($"{"RecipeIconsRecipeTooltipConsumes".Translate()} ");
 
             bool first = true;
             foreach (IngredientCount ing in recipe.ingredients)
@@ -128,7 +128,7 @@ namespace RecipeIcons
 
             if (products != null && (products.Count > 1 || (products.Count == 1 && products[0].count > 1)))
             {
-                layout.Text("Produces: ");
+                layout.Text($"{"RecipeIconsRecipeTooltipProduces".Translate()} ");
 
                 first = true;
                 foreach (ThingDefCountClass res in products)
@@ -149,7 +149,7 @@ namespace RecipeIcons
                 if (example != null)
                 {
                     GUI.color = color;
-                    layout.Text(" (example for ");
+                    layout.Text($" ({"RecipeIconsRecipeTooltipExample".Translate()} ");
                     layout.Icon(Icon.getIcon(example), iconSize);
                     GUI.color = color;
                     layout.Text(")");
@@ -161,7 +161,7 @@ namespace RecipeIcons
             GUI.color = color;
             if (recipe.skillRequirements != null && recipe.skillRequirements.Count > 0)
             {
-                layout.Text("Requires: ");
+                layout.Text($"{"RecipeIconsRecipeTooltipRequires".Translate()} ");
                 int count = 0;
                 foreach (SkillRequirement req in recipe.skillRequirements)
                 {
@@ -175,13 +175,13 @@ namespace RecipeIcons
             if (needExplain.Count > 0)
             {
                 layout.Newline();
-                layout.Text("Where: ");
+                layout.Text("RecipeIconsRecipeTooltipWhere".Translate());
                 layout.Newline();
 
                 for (int i = 0; i < needExplain.Count; i++)
                 {
                     layout.Icon(needExplain[i].icon, iconSize);
-                    layout.Text(" is any of: ");
+                    layout.Text($" {"RecipeIconsRecipeTooltipIsAnyOf".Translate()} ");
 
                     int displayedCount = 0;
                     foreach (ThingDef def in needExplain[i].filter.AllowedThingDefs.Where(x => recipe.fixedIngredientFilter.Allows(x)))
