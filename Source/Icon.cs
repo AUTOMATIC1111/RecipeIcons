@@ -170,8 +170,7 @@ namespace RecipeIcons
         static FieldInfo fieldStuffCategoriesToAllow = typeof(ThingFilter).GetField("stuffCategoriesToAllow", BindingFlags.NonPublic | BindingFlags.Instance);
         public static Icon getIcon(RecipeDef recipe, IngredientCount ing)
         {
-            Icon res = missing;
-
+            Icon res;
             if (ing == null) return missing;
             if (ing.IsFixedIngredient) return getIcon(ing.FixedIngredient);
 
@@ -195,7 +194,7 @@ namespace RecipeIcons
                 foreach (StuffCategoryDef cat in def.stuffCategories)
                 {
                     res = mapStuffCategoryIcons.TryGetValue(cat.defName);
-                    if (res != missing) return res;
+                    if (res != missing && res != null) return res;
                 }
             }
 
