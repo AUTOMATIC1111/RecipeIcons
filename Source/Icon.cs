@@ -82,6 +82,7 @@ namespace RecipeIcons
 
         }
 
+        static Rect rect0011 = new Rect(0f, 0f, 1f, 1f);
         public bool Draw(Rect rect)
         {
             if (material != null)
@@ -93,7 +94,8 @@ namespace RecipeIcons
                     else { rect.y += (rect.height - rect.height / ratio) / 2; rect.height /= ratio; };
                 }
 
-                Graphics.DrawTexture(rect, texture, material, 0);
+
+                Graphics.DrawTexture(rect, texture, rect0011, 0, 0, 0, 0, new Color(1, 1, 1, GUI.color.a), material, -1);
                 return true;
             }
 

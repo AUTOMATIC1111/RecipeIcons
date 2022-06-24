@@ -16,11 +16,13 @@ namespace RecipeIcons
         static Dictionary<string, RecipeDef> recipeDatabase = new Dictionary<string, RecipeDef>();
         static string RecipeKey(RecipeDef def) { return (def.LabelCap + "|" + def.ProducedThingDef?.defName).Trim(); }
         static string RecipeKey(FloatMenuOption option) { return (option.Label + "|" + (fieldShownItem.GetValue(option) as ThingDef)?.defName).Trim(); }
+        static string RecipeKeyFallback(FloatMenuOption option) { return option.Label + "|" + (string)null; }
 
         private static readonly Color ColorBGActive = new ColorInt(21, 25, 29).ToColor;
         private static readonly Color ColorBorder = Color.white;
         private static readonly Color ColorTextActive = Color.white;
         private static readonly Color ColorTextIngCount = new Color(0.5f, 0.5f, 0.5f);
+        private static readonly Color ColorModName = new Color(0.5f, 0.5f, 0.5f);
         private static readonly int iconSize = 28;
 
         TextLayout layout = new TextLayout();
@@ -40,7 +42,7 @@ namespace RecipeIcons
                 }
             }
 
-            return recipeDatabase.TryGetValue(RecipeKey(option));
+            return recipeDatabase.TryGetValue(RecipeKey(option)) ?? recipeDatabase.TryGetValue(RecipeKeyFallback(option));
         }
 
 
@@ -85,16 +87,20 @@ namespace RecipeIcons
                 Icon icon = Icon.getIcon(recipe, ing);
                 float count = ing.GetBaseCount();
 
-                if (ing.filter?.AllowedThingDefs != null)
+                ThingDef def = null;
+                if (ing.IsFixedIngredient) {
+                    def = ing.FixedIngredient;
+                }
+                else if (ing.filter?.AllowedThingDefs != null)
                 {
-                    ThingDef def = ing.filter.AllowedThingDefs.Where(x => recipe.fixedIngredientFilter.Allows(x) && !x.smallVolume).FirstOrDefault();
+                    def = ing.filter.AllowedThingDefs.Where(x => recipe.fixedIngredientFilter.Allows(x) && !x.smallVolume).FirstOrDefault();
                     if (def == null) def = ing.filter.AllowedThingDefs.Where(x => recipe.fixedIngredientFilter.Allows(x)).FirstOrDefault();
+                }
 
-                    if (def != null)
-                    {
-                        float multiplier = recipe.IngredientValueGetter.ValuePerUnitOf(def);
-                        if (multiplier > 0) count /= multiplier;
-                    }
+                if (def != null)
+                {
+                    float multiplier = recipe.IngredientValueGetter.ValuePerUnitOf(def);
+                    if (multiplier > 0) count /= multiplier;
                 }
 
                 if (count != 1)
@@ -118,10 +124,22 @@ namespace RecipeIcons
 
             ThingDef example = null;
             List<ThingDefCountClass> products = recipe.products;
-            if (products.Count == 0 && recipe.specialProducts != null && recipe.specialProducts.Contains(SpecialProductType.Butchery) && recipe.ingredients.Count > 0)
+            bool productsEmpty = products == null || products.Count == 0;
+            bool hasIngredients = recipe.ingredients != null && recipe.ingredients.Count > 0;
+
+            if (productsEmpty && hasIngredients && recipe.specialProducts != null && recipe.specialProducts.Contains(SpecialProductType.Butchery))
             {
-                example = recipe.ingredients[0].filter.AllowedThingDefs.FirstOrDefault(x => recipe.fixedIngredientFilter.Allows(x) && x.butcherProducts != null);
-                if (example == null) example = recipe.ingredients[0].filter.AllowedThingDefs.Where(x => recipe.fixedIngredientFilter.Allows(x)).Select(x => Icon.corpseMap.TryGetValue(x)).FirstOrDefault(x => x?.butcherProducts != null);
+                var defs = recipe.ingredients[0].filter.AllowedThingDefs;
+
+                example = defs.FirstOrDefault(x => recipe.fixedIngredientFilter.Allows(x) && x.butcherProducts != null);
+
+                if (example == null)
+                {
+                    example = defs
+                        .Where(x => recipe.fixedIngredientFilter.Allows(x))
+                        .Select(x => Icon.corpseMap.TryGetValue(x))
+                        .FirstOrDefault(x => x?.butcherProducts != null);
+                }
 
                 products = example?.butcherProducts;
             }
@@ -199,6 +217,16 @@ namespace RecipeIcons
                     layout.Newline();
                 }
             }
+
+            GUI.color = Color.grey;
+            if (RecipeIcons.settings.showMod && recipe.modContentPack != null && ! recipe.modContentPack.IsCoreMod)
+            {
+                layout.Text(recipe.modContentPack.Name);
+
+                layout.Newline();
+            }
+
+            GUI.color = color;
             Text.Anchor = TextAnchor.UpperLeft;
         }
 

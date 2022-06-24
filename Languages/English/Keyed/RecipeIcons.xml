@@ -8,10 +8,16 @@
   <RecipeIconsDisableSmallMenusName>Disable small float menus</RecipeIconsDisableSmallMenusName>
   <RecipeIconsDisableSmallMenusDesc>Prevent menus from switching into small mode when they have too many items.</RecipeIconsDisableSmallMenusDesc>
   
+  <RecipeIconsShowModName>Show info: mod</RecipeIconsShowModName>
+  <RecipeIconsShowModDesc>Show the mod that item is from in its tooltip.</RecipeIconsShowModDesc>
+  
   <RecipeIconsRecipeTooltipConsumes>Consumes:</RecipeIconsRecipeTooltipConsumes>
   <RecipeIconsRecipeTooltipProduces>Produces:</RecipeIconsRecipeTooltipProduces>
   <RecipeIconsRecipeTooltipExample>example for</RecipeIconsRecipeTooltipExample>
   <RecipeIconsRecipeTooltipRequires>Requires:</RecipeIconsRecipeTooltipRequires>
   <RecipeIconsRecipeTooltipWhere>Where</RecipeIconsRecipeTooltipWhere>
   <RecipeIconsRecipeTooltipIsAnyOf>is any of:</RecipeIconsRecipeTooltipIsAnyOf>
+  <RecipeIconsRecipeTooltipWorkToMake>Work to make: {0}</RecipeIconsRecipeTooltipWorkToMake>
+  <RecipeIconsRecipeTooltipWorkToMakeWithSpeed>Work to make: {0} ({1})</RecipeIconsRecipeTooltipWorkToMakeWithSpeed>
+  
 </LanguageData>
